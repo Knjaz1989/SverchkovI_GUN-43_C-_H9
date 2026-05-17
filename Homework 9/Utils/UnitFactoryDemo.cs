@@ -12,6 +12,7 @@ namespace GamePrototype.Utils
             player.AddItemToInventory(new Weapon(10, 15, "Sword"));
             player.AddItemToInventory(new Armour(10, 15, "Armour"));
             player.AddItemToInventory(new HealthPotion("Potion"));
+            player.AddItemToInventory(new Grindstone("Grindstone"));
             return player;
         }
 

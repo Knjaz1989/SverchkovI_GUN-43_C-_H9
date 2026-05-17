@@ -40,7 +40,8 @@ namespace GamePrototype.Combat
 
         private void HandleCombatInput(Unit player, Unit enemy, RockPaperScissors rockPaperScissors)
         {
-            var enemyInput = (RockPaperScissors) _random.Next(1, 3);
+            // Поправил рандом, чтобы 3 тоже включалась, ибо NPC работал только с двумя ответами.
+            var enemyInput = (RockPaperScissors) _random.Next(1, 4);
             Console.WriteLine($"Result player = {rockPaperScissors} and enemy = {enemyInput}");
             switch (rockPaperScissors) 
             {

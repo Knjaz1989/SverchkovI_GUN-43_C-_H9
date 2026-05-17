@@ -25,7 +25,8 @@ namespace GamePrototype.Units
         public override void HandleCombatComplete()
         {
             var items = Inventory.Items;
-            for (int i = 0; i < items.Count; i++) 
+            // Итерируемся с конца, чтобы смещение индексов при удалении элементов не влияло на количество итераций.
+            for (int i = items.Count - 1; i >= 0; i--) 
             {
                 if (items[i] is EconomicItem economicItem) 
                 {
@@ -51,6 +52,15 @@ namespace GamePrototype.Units
             {
                 Health += healthPotion.HealthRestore;
             }
+            // Если нам попадается камень, то мы его используем для починки оружия
+            else if (economicItem is Grindstone grindstone)
+            {
+                if (_equipment.TryGetValue(EquipSlot.Weapon, out var item) && item is Weapon weapon)
+                {
+                    weapon.Repair(grindstone.RepairValue);
+                    Console.WriteLine("Your weapon is fixed");
+                }
+            }
         }
 
         protected override uint CalculateAppliedDamage(uint damage)
@@ -74,6 +84,16 @@ namespace GamePrototype.Units
                 builder.AppendLine($"[{items[i].Name}] : {items[i].Amount}");
             }
             return builder.ToString();
+        }
+
+        //Переопределил существующий метод, чтобы не писать новое. В нем мы ломаем броню. Этот метод срабатывает после успешного получения дамага пользователя
+        protected override void DamageReceiveHandler()
+        {
+            if (_equipment.TryGetValue(EquipSlot.Armour, out var item) && item is Armour armour)
+            {
+                armour.BreakArmor();
+                Console.WriteLine($"Defence of your Armor is {armour.Defence}");
+            }
         }
     }
 }
