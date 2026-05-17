@@ -4,7 +4,7 @@ namespace GamePrototype.Units
 {
     public abstract class Unit
     {
-        private const int INVENTORY_SIZE = 3;
+        private const int INVENTORY_SIZE = 5;
         private uint _health;
         private uint _maxHealth;
         protected uint BaseDamage;
@@ -59,14 +59,23 @@ namespace GamePrototype.Units
             }
         }
 
+        protected virtual bool TryEquipItem(Item item)
+        {
+            return false; // базовая реализация
+        }
+
         public void AddItemsFromUnitToInventory(Unit unit)
         {
             for (int i = 0; i < unit.Inventory.Items.Count; i++) 
             {
-                if (!Inventory.TryAdd(unit.Inventory.Items[i])) 
+                Item item = unit.Inventory.Items[i];
+                if (!TryEquipItem(item))
                 {
-                    //inventory is full
-                    return;
+                    if (!Inventory.TryAdd(item))
+                    {
+                        //inventory is full
+                        return;
+                    }
                 }
             }
         }

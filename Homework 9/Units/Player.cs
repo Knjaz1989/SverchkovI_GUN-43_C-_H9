@@ -7,7 +7,7 @@ namespace GamePrototype.Units
 {
     public sealed class Player : Unit
     {
-        private readonly Dictionary<EquipSlot, EquipItem> _equipment = new();
+        private Dictionary<EquipSlot, EquipItem> _equipment = new();
 
         public Player(string name, uint health, uint maxHealth, uint baseDamage) : base(name, health, maxHealth, baseDamage)
         {            
@@ -15,9 +15,13 @@ namespace GamePrototype.Units
 
         public override uint GetUnitDamage()
         {
-            if (_equipment.TryGetValue(EquipSlot.Weapon, out var item) && item is Weapon weapon) 
+            if (_equipment.TryGetValue(EquipSlot.Weapon, out var item1) && item1 is Weapon weapon && weapon.Damage > 0) 
             {
                 return BaseDamage + weapon.Damage;
+            }
+            else if (_equipment.TryGetValue(EquipSlot.RangeWeapon, out var item2) && item2 is RangeWeapon rangeWeapon)
+            {
+                return BaseDamage + rangeWeapon.Damage;
             }
             return BaseDamage;
         }
@@ -94,6 +98,34 @@ namespace GamePrototype.Units
                 armour.BreakArmor();
                 Console.WriteLine($"Defence of your Armor is {armour.Defence}");
             }
+        }
+
+        protected override bool TryEquipItem(Item item)
+        {
+            if (item is EquipItem equipItem)
+            {
+                EquipSlot slot = equipItem.Slot;
+
+                if (_equipment.ContainsKey(slot))
+                {
+                    Console.WriteLine($"Слот {slot} занят. Заменить? (Yes/No)");
+                    if (Console.ReadLine() == "Yes")
+                    {
+                        Inventory.TryAdd(_equipment[slot]); // старый в инвентарь
+                        _equipment[slot] = equipItem;
+                        Console.WriteLine($"{equipItem.Name} экипирован.");
+                        return true; // уже экипировали, не надо в инвентарь
+                    }
+                    return false; // в инвентарь
+                }
+                else
+                {
+                    _equipment[slot] = equipItem;
+                    Console.WriteLine($"{equipItem.Name} экипирован.");
+                    return true; // уже экипировали, не надо в инвентарь
+                }
+            }
+            return false; // не экипировка — в инвентарь
         }
     }
 }
